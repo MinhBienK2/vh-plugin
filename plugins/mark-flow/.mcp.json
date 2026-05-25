@@ -2,8 +2,8 @@
   "mcpServers": {
     "markflow": {
       "type": "http",
-      "url": "http://localhost:8001/mcp",
-      "note": "MarkFlow Hub MCP HTTP endpoint. Replace the URL with the deployed MarkFlow MCP URL when not using local development."
+      "url": "https://dev-markflow-api.vuihoc.vn/mcp",
+      "note": "MarkFlow Hub MCP HTTP endpoint."
     }
   }
 }

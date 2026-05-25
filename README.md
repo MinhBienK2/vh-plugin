@@ -12,12 +12,12 @@ It exposes one plugin, `mark-flow`, that bundles:
 ## Requirements
 
 - Codex CLI with plugin support.
-- A MarkFlow MCP HTTP endpoint, defaulting to `http://localhost:8001/mcp`.
+- A MarkFlow MCP HTTP endpoint, defaulting to `https://dev-markflow-api.vuihoc.vn/mcp`.
 
 ## Setup
 
-Set `plugins/mark-flow/.mcp.json` to the MarkFlow MCP URL you want Codex to use. The default is local development:
-`http://localhost:8001/mcp`.
+Set `plugins/mark-flow/.mcp.json` to the MarkFlow MCP URL you want Codex to use. The default is:
+`https://dev-markflow-api.vuihoc.vn/mcp`.
 
 Add this local marketplace to Codex:
 
