@@ -5,47 +5,47 @@ description: Uses the bundled `markflow` MCP server to search, inspect, summariz
 
 # MarkFlow
 
-Use the configured `markflow` MCP server first for MarkFlow Hub business questions. Choose the smallest tool sequence that can answer the user's intent, then synthesize only from returned records.
+Use the configured `markflow` MCP server first for MarkFlow Hub business questions. Work from the user's business intent to the smallest useful tool sequence, then answer only from returned records.
 
-## Intent Routing
+## Business Objects
 
-1. Classify the user's intent before calling tools:
-   - Catalog: class, subject, team, or target audience names.
-   - Normal script discovery: section-based scripts by keyword, status, team, class, target audience, author person type, or updated date.
-   - Daily script discovery: item-based scripts by keyword, status, team, or updated date.
-   - Detail/summary: one known script or daily script ID.
-   - Review context: comments, approval history, rejection reasons, blockers, or audit trail.
-2. Resolve catalog names before using ID filters.
-3. Search first, then fetch details for likely IDs. Skip detail calls when list results already answer the question.
-4. Fetch content arrays only for summaries, comparisons, or content review.
-5. Fetch comments or timelines only for review context.
+- Normal scripts are section-based lesson/production scripts. Key fields: `title`, `status`, `class_snapshots`, `subject_snapshots`, `team`, `target_audience`, `sections[].section_title`, `sections[].dialogue`, `sections[].performance_style`, duet teacher/actor names.
+- Daily scripts are item-based daily content. Key fields: `title`, `status`, `team_name`, `type_key`, `metadata_values`, `note`, `caption`, `items[].item_title`, `items[].voice`, `items[].source`.
+- Comments are unit-level feedback: normal scripts group by `section_order`; daily scripts group by `item_order`. Use them for unresolved feedback, reviewer notes, or content blockers.
+- Timelines are workflow events: `CREATED`, `EDITED`, `SUBMITTED`, `WITHDRAWN`, `REJECTED`, `RESUBMITTED`, `APPROVED`, `DELETED`. Use them for audit history, approval flow, rejection reasons, and actor/date context.
 
-## Tool Selection
+## Tool Playbooks
 
-- `search_scripts`: search normal scripts. Filters: `keyword`, `status_filter`, `team_id`, `class_id`, `target_audience_id`, `author_person_type`, `updated_from`, `updated_to`, `page`, `page_size`.
-- `get_script`: open one normal script by ID. Use `include_sections=false` when only metadata is needed; include sections for summaries or content review.
-- `get_script_comments`: read section comments for one normal script.
-- `search_daily_scripts`: search daily scripts. Filters: `keyword`, `status_filter`, `team_id`, `updated_from`, `updated_to`, `page`, `page_size`.
-- `get_daily_script`: open one daily script by ID. Use `include_items=false` when only metadata is needed; include items for summaries or content review.
-- `get_daily_script_comments`: read item comments for one daily script.
-- `list_classes`, `list_subjects`, `list_teams`, `list_target_audiences`: resolve catalog values before filtering.
-- `get_script_timeline`, `get_daily_script_timeline`: read approval/review event history.
+- Catalog name resolution: use `list_classes`, `list_subjects`, `list_teams`, or `list_target_audiences` before numeric filters. Match names carefully, preserve Vietnamese text, and mention ambiguity when multiple catalog items look plausible.
+- Normal script search: use `search_scripts` for title or section text discovery. Filters: `keyword`, `status_filter`, `team_id`, `class_id`, `target_audience_id`, `author_person_type`, `updated_from`, `updated_to`, `page`, `page_size`.
+- Normal script detail: use `get_script` after a likely ID. Set `include_sections=false` for metadata/status/catalog checks; set `include_sections=true` for summaries, section review, dialogue, or performance style.
+- Normal script review context: use `get_script_comments` for section feedback and `get_script_timeline` for workflow events. Use both when the user asks why a script is blocked, rejected, pending, or approved.
+- Daily script search: use `search_daily_scripts` for daily content, voice/source, note, caption, type, metadata, status, team, or updated-date questions. Filters: `keyword`, `status_filter`, `team_id`, `updated_from`, `updated_to`, `page`, `page_size`.
+- Daily script detail: use `get_daily_script` after a likely ID. Set `include_items=false` for metadata/status checks; set `include_items=true` for voice/source summaries, item review, or content comparison.
+- Daily script review context: use `get_daily_script_comments` for item feedback and `get_daily_script_timeline` for workflow events.
 
-## Business Rules
+## Common Business Workflows
 
-- Preserve user-provided Vietnamese names, titles, and keywords exactly when searching.
-- Use uppercase status values: `DRAFT`, `SUBMITTED`, `REJECTED`, `RESUBMITTED`, or `APPROVED`.
-- Use `author_person_type=teacher` or `author_person_type=actor` only for normal scripts.
-- Use ISO 8601 date strings for updated-date filters.
-- Keep page sizes modest; `page_size` must be between 1 and 100.
-- Prefer narrower filters over broad searches when the user gives enough context.
-- `search_scripts` has no `subject_id` filter. If the user names a subject, list subjects for context, then use keyword search or inspect candidate details.
-- Do not fabricate IDs, statuses, comments, or review events. If no matching record is returned, say that directly and suggest a narrower or broader query.
+1. "Find scripts for class/team/audience/status": resolve named catalogs, then call `search_scripts` with IDs and `status_filter`. Return title, ID, status, class, subject, team, audience, author, updated time.
+2. "Find daily scripts for team/type/topic": resolve team if named, then call `search_daily_scripts`. Put type and metadata in the answer because daily script type often lives in `type_key` or `metadata_values`, not only title.
+3. "Summarize this script": call `get_script` with sections. Summarize by section order, dialogue intent, performance style, and any obvious missing/weak content. Do not infer unseen sections.
+4. "Summarize this daily script": call `get_daily_script` with items. Summarize by item order, voice/source, note, caption, type, and metadata values.
+5. "What feedback is unresolved?": call the relevant comments tool. Group by section/item order; include author, created/updated time, `is_resolved`, and content.
+6. "Why was this rejected or approved?": call the relevant timeline tool; add comments only if the user asks for feedback details or blockers. Timeline notes are workflow reasons; comments are discussion feedback.
+7. "Compare two records": fetch both details with content arrays only when comparison needs content. Compare status/catalog metadata first, then section/item content.
 
-## Response Rules
+## Query Rules
 
-- Separate facts from interpretation. Mention source record IDs/titles when comparing or summarizing multiple records.
-- For normal script summaries, use title/status/team/class plus section `section_title`, `dialogue`, and `performance_style` when present.
-- For daily script summaries, use title/status/team plus item `voice`, `source`, `note`, `caption`, `type`, and metadata values when present.
-- For review answers, distinguish comments from timeline events.
-- If the user asks to create, update, approve, reject, delete, or schedule MarkFlow records, explain that the bundled MCP tools are read-only and ask whether they want code/API work instead.
+- Preserve user-provided Vietnamese keywords exactly. Keyword search is case-insensitive in MarkFlow, so do not translate or normalize user terms unless the user asks.
+- Status filters must be uppercase: `DRAFT`, `SUBMITTED`, `REJECTED`, `RESUBMITTED`, `APPROVED`.
+- `author_person_type` accepts only `teacher` or `actor`, and only for `search_scripts`.
+- Dates must be ISO 8601 strings. Use date-only values for whole days when the user gives a day.
+- `page_size` must be 1-100. Start with 10-20 unless the user asks for a broad scan; if `total` exceeds returned `items`, state that results are paged.
+- `search_scripts` has no `subject_id` filter. If the user names a subject, use `list_subjects` for context, then search by keyword and inspect candidate details for `subject_snapshots`.
+
+## Answer Rules
+
+- Lead with the direct business answer, then list evidence records. Include IDs when the user may need follow-up detail.
+- Separate record facts from your interpretation. Use phrases like "Based on returned comments..." for conclusions.
+- Do not invent catalog names, statuses, reasons, comments, or missing records. If no data returns, say so and suggest the next narrower or broader query.
+- The bundled MCP tools are read-only. For create/update/approve/reject/delete/schedule requests, say the MCP cannot perform that action and offer to help with API/code work if relevant.
