@@ -3,7 +3,7 @@
     "markflow": {
       "type": "http",
       "url": "http://localhost:8001/mcp",
-      "note": "MarkFlow Hub MCP streamable HTTP endpoint. Replace the URL with the deployed MarkFlow MCP URL when not using local development. Authentication is handled by the MCP client OAuth flow."
+      "note": "MarkFlow Hub MCP HTTP endpoint. Replace the URL with the deployed MarkFlow MCP URL when not using local development."
     }
   }
 }

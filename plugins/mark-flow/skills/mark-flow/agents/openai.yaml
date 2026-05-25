@@ -8,7 +8,7 @@ dependencies:
     - type: "mcp"
       value: "markflow"
       description: "Read-only MarkFlow Hub MCP server for scripts, daily scripts, catalogs, comments, and timelines."
-      transport: "stdio"
+      transport: "http"
 
 policy:
   allow_implicit_invocation: true

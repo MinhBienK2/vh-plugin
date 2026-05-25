@@ -5,26 +5,20 @@ description: Uses the bundled `markflow` MCP server to search, inspect, summariz
 
 # MarkFlow
 
-Use the bundled `markflow` MCP server first for MarkFlow Hub business data. Treat the tools as read-only accessors; RBAC, BU scoping, and record visibility are enforced by the MarkFlow backend behind the authenticated token.
+Use the configured `markflow` MCP server first for MarkFlow Hub business questions. Choose the smallest tool sequence that can answer the user's intent, then synthesize only from returned records.
 
-## Preconditions
-
-- Expect a reachable MarkFlow MCP HTTP endpoint, configured in the plugin `.mcp.json` as `http://localhost:8001/mcp` by default.
-- Treat `/home/pc599/Documents/mark-flow/backend` as source-reference context only; do not require Codex to spawn that local folder at runtime.
-- Authenticate through the MCP client's OAuth flow. Never ask the user to paste passwords or long-lived secrets into chat.
-
-## Route The Request
+## Intent Routing
 
 1. Classify the user's intent before calling tools:
-   - Catalog lookup: translate class, subject, team, or target audience names into available catalog entries.
-   - Script discovery: find normal scripts by keyword, status, team, class, target audience, author person type, or updated date.
-   - Daily discovery: find daily scripts by keyword, status, team, or updated date.
-   - Detail/summary: inspect one known script or daily script ID, including content only when needed.
-   - Review context: inspect comments or timeline for one known script or daily script.
-2. Use catalog tools first when the user gives names but a search filter needs integer IDs.
-3. Search before detail unless the user already supplied a likely ID.
-4. Fetch comments or timelines only for review context, feedback, approval history, blockers, or audit trail.
-5. Keep answers scoped to returned records. State when filters, permissions, or pagination make results partial.
+   - Catalog: class, subject, team, or target audience names.
+   - Normal script discovery: section-based scripts by keyword, status, team, class, target audience, author person type, or updated date.
+   - Daily script discovery: item-based scripts by keyword, status, team, or updated date.
+   - Detail/summary: one known script or daily script ID.
+   - Review context: comments, approval history, rejection reasons, blockers, or audit trail.
+2. Resolve catalog names before using ID filters.
+3. Search first, then fetch details for likely IDs. Skip detail calls when list results already answer the question.
+4. Fetch content arrays only for summaries, comparisons, or content review.
+5. Fetch comments or timelines only for review context.
 
 ## Tool Selection
 
@@ -37,7 +31,7 @@ Use the bundled `markflow` MCP server first for MarkFlow Hub business data. Trea
 - `list_classes`, `list_subjects`, `list_teams`, `list_target_audiences`: resolve catalog values before filtering.
 - `get_script_timeline`, `get_daily_script_timeline`: read approval/review event history.
 
-## Query Discipline
+## Business Rules
 
 - Preserve user-provided Vietnamese names, titles, and keywords exactly when searching.
 - Use uppercase status values: `DRAFT`, `SUBMITTED`, `REJECTED`, `RESUBMITTED`, or `APPROVED`.
@@ -50,9 +44,8 @@ Use the bundled `markflow` MCP server first for MarkFlow Hub business data. Trea
 
 ## Response Rules
 
-- Separate facts from interpretation. Mention which records or tools the answer is based on when it matters.
+- Separate facts from interpretation. Mention source record IDs/titles when comparing or summarizing multiple records.
 - For normal script summaries, use title/status/team/class plus section `section_title`, `dialogue`, and `performance_style` when present.
 - For daily script summaries, use title/status/team plus item `voice`, `source`, `note`, `caption`, `type`, and metadata values when present.
 - For review answers, distinguish comments from timeline events.
-- If a tool returns 401, tell the user to complete or refresh the MCP OAuth login for the configured MarkFlow MCP URL. If it returns 403, report that the authenticated user lacks permission for that BU or resource.
 - If the user asks to create, update, approve, reject, delete, or schedule MarkFlow records, explain that the bundled MCP tools are read-only and ask whether they want code/API work instead.
