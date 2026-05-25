@@ -1,0 +1,20 @@
+{
+  "name": "mark-flow-local",
+  "interface": {
+    "displayName": "MarkFlow Local"
+  },
+  "plugins": [
+    {
+      "name": "mark-flow",
+      "source": {
+        "source": "local",
+        "path": "./plugins/mark-flow"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "markflow": {
+      "command": "uv",
+      "args": [
+        "run",
+        "markflow-mcp"
+      ],
+      "cwd": "/home/pc599/Documents/mark-flow/backend",
+      "env": {
+        "MARKFLOW_MCP_TRANSPORT": "stdio"
+      },
+      "env_vars": [
+        "MARKFLOW_API_BASE_URL",
+        "MARKFLOW_ACCESS_TOKEN",
+        "MARKFLOW_MCP_TIMEOUT_SECONDS"
+      ]
+    }
+  }
+}
