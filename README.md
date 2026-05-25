@@ -5,21 +5,20 @@ This repository is a local Codex plugin marketplace for MarkFlow Hub.
 It exposes one plugin, `mark-flow`, that bundles:
 
 - a Codex plugin manifest at `plugins/mark-flow/.codex-plugin/plugin.json`
-- a bundled MCP stdio server config at `plugins/mark-flow/.mcp.json`
+- a bundled MCP HTTP server config at `plugins/mark-flow/.mcp.json`
 - a MarkFlow usage skill at `plugins/mark-flow/skills/mark-flow/SKILL.md`
 - marketplace metadata at `.agents/plugins/marketplace.json`
 
 ## Requirements
 
 - Codex CLI with plugin support.
-- `uv` on `PATH`.
-- MarkFlow backend source at `/home/pc599/Documents/mark-flow/backend`.
-- MarkFlow FastAPI backend running at `MARKFLOW_API_BASE_URL` or `http://localhost:8000`.
-- `MARKFLOW_ACCESS_TOKEN` in the environment that starts Codex.
+- A deployed or local MarkFlow MCP Streamable HTTP endpoint.
+- Default local MCP URL: `http://localhost:8001/mcp`.
+- OAuth login through the MCP client for the configured MarkFlow MCP URL.
 
 ## Local Setup
 
-Start the MarkFlow backend:
+Build/run MarkFlow as an HTTP MCP service. For local development from the source repo, run MarkFlow's backend and MCP HTTP service from `/home/pc599/Documents/mark-flow`; that source path is only for building/reading the service, not something the Codex plugin spawns at runtime.
 
 ```bash
 cd /home/pc599/Documents/mark-flow/backend
@@ -27,37 +26,31 @@ uv sync
 uv run uvicorn app.main:app --reload
 ```
 
-Get a local MCP access token from MarkFlow:
-
 ```bash
-curl -X POST http://localhost:8000/auth/token \
-  -H 'Content-Type: application/json' \
-  -d '{"bu":"vuihoc","username":"<username>","password":"<password>"}'
+cd /home/pc599/Documents/mark-flow/backend
+MARKFLOW_MCP_TRANSPORT=streamable-http \
+MARKFLOW_MCP_HOST=127.0.0.1 \
+MARKFLOW_MCP_PORT=8001 \
+MARKFLOW_MCP_PATH=/mcp \
+MARKFLOW_API_BASE_URL=http://localhost:8000 \
+MARKFLOW_OAUTH_ISSUER=http://localhost:8000 \
+MARKFLOW_MCP_RESOURCE_URL=http://localhost:8001/mcp \
+uv run markflow-mcp
 ```
 
-Export the returned access token before launching Codex:
-
-```bash
-export MARKFLOW_API_BASE_URL=http://localhost:8000
-export MARKFLOW_ACCESS_TOKEN=<access-token>
-```
+If your MCP service is deployed somewhere else, change `plugins/mark-flow/.mcp.json` from `http://localhost:8001/mcp` to that deployed `/mcp` URL.
 
 Add this local marketplace to Codex:
 
 ```bash
-codex plugin marketplace add /home/pc599/Documents/mark-flow-plugin
+codex plugin marketplace add /home/pc599/Documents/vh-plugin
 ```
 
-Restart Codex, open `/plugins`, choose `MarkFlow Local`, install `MarkFlow`, and enable it.
+Restart Codex, open `/plugins`, choose `MarkFlow Local`, install `MarkFlow`, enable it, then complete the MCP OAuth login when Codex prompts for access.
 
 ## MCP Server
 
-The plugin launches the existing MarkFlow backend script:
-
-```bash
-cd /home/pc599/Documents/mark-flow/backend
-uv run markflow-mcp
-```
+The plugin connects to the configured MarkFlow MCP HTTP URL. It does not run `uv`, does not depend on `/home/pc599/Documents/mark-flow/backend` at runtime, and does not read local backend files as data.
 
 The bundled MCP tools are read-only:
 
@@ -82,5 +75,5 @@ From this repository:
 python3 -m json.tool .agents/plugins/marketplace.json >/dev/null
 python3 -m json.tool plugins/mark-flow/.codex-plugin/plugin.json >/dev/null
 python3 -m json.tool plugins/mark-flow/.mcp.json >/dev/null
-CODEX_HOME="$(mktemp -d)" codex plugin marketplace add /home/pc599/Documents/mark-flow-plugin
+CODEX_HOME="$(mktemp -d)" codex plugin marketplace add /home/pc599/Documents/vh-plugin
 ```

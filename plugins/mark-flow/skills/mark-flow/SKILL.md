@@ -9,9 +9,9 @@ Use the bundled `markflow` MCP server first for MarkFlow Hub business data. Trea
 
 ## Preconditions
 
-- Expect the MarkFlow FastAPI backend at `MARKFLOW_API_BASE_URL` or `http://localhost:8000`.
-- Expect `MARKFLOW_ACCESS_TOKEN` in the environment that launches Codex for stdio MCP.
-- Never ask the user to paste passwords or long-lived secrets into chat. If auth fails, ask them to refresh `MARKFLOW_ACCESS_TOKEN` in their shell and restart Codex.
+- Expect a reachable MarkFlow MCP HTTP endpoint, configured in the plugin `.mcp.json` as `http://localhost:8001/mcp` by default.
+- Treat `/home/pc599/Documents/mark-flow/backend` as source-reference context only; do not require Codex to spawn that local folder at runtime.
+- Authenticate through the MCP client's OAuth flow. Never ask the user to paste passwords or long-lived secrets into chat.
 
 ## Route The Request
 
@@ -54,5 +54,5 @@ Use the bundled `markflow` MCP server first for MarkFlow Hub business data. Trea
 - For normal script summaries, use title/status/team/class plus section `section_title`, `dialogue`, and `performance_style` when present.
 - For daily script summaries, use title/status/team plus item `voice`, `source`, `note`, `caption`, `type`, and metadata values when present.
 - For review answers, distinguish comments from timeline events.
-- If a tool returns 401, tell the user to refresh `MARKFLOW_ACCESS_TOKEN` for stdio or complete the MCP OAuth flow for HTTP transport. If it returns 403, report that the authenticated user lacks permission for that BU or resource.
+- If a tool returns 401, tell the user to complete or refresh the MCP OAuth login for the configured MarkFlow MCP URL. If it returns 403, report that the authenticated user lacks permission for that BU or resource.
 - If the user asks to create, update, approve, reject, delete, or schedule MarkFlow records, explain that the bundled MCP tools are read-only and ask whether they want code/API work instead.
