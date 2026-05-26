@@ -1,6 +1,6 @@
 # MarkFlow Codex Plugin
 
-This repository is a local Codex plugin marketplace for MarkFlow Hub.
+This repository is a Codex plugin marketplace for MarkFlow Hub.
 
 It exposes one plugin, `mark-flow`, that bundles:
 
@@ -19,17 +19,17 @@ It exposes one plugin, `mark-flow`, that bundles:
 Set `plugins/mark-flow/.mcp.json` to the MarkFlow MCP URL you want Codex to use. The default is:
 `https://dev-markflow-api.vuihoc.vn/mcp`.
 
-Add this local marketplace to Codex:
+Add this marketplace to Codex from GitHub:
 
 ```bash
-codex plugin marketplace add /home/pc599/Documents/vh-plugin
+codex plugin marketplace add https://github.com/MinhBienK2/vh-plugin.git
 ```
 
-Restart Codex, open `/plugins`, choose `MarkFlow Local`, install `MarkFlow`, and enable it.
+Restart Codex, open `/plugins`, choose `MarkFlow`, install it, and enable it.
 
 ## MCP Server
 
-The plugin connects to the configured MarkFlow MCP HTTP URL. It does not run local source files as part of plugin execution.
+The plugin connects to the configured MarkFlow MCP HTTP URL. The plugin bundle does not run a backend service; it only configures Codex to call that MCP endpoint.
 
 The bundled MCP tools are read-only:
 
@@ -45,14 +45,3 @@ The bundled MCP tools are read-only:
 - `list_target_audiences`
 - `get_script_timeline`
 - `get_daily_script_timeline`
-
-## Validate
-
-From this repository:
-
-```bash
-python3 -m json.tool .agents/plugins/marketplace.json >/dev/null
-python3 -m json.tool plugins/mark-flow/.codex-plugin/plugin.json >/dev/null
-python3 -m json.tool plugins/mark-flow/.mcp.json >/dev/null
-CODEX_HOME="$(mktemp -d)" codex plugin marketplace add /home/pc599/Documents/vh-plugin
-```

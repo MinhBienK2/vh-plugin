@@ -1,7 +1,7 @@
 {
-  "name": "mark-flow-local",
+  "name": "mark-flow",
   "interface": {
-    "displayName": "MarkFlow Local"
+    "displayName": "MarkFlow"
   },
   "plugins": [
     {
