@@ -5,14 +5,14 @@ This repository is a Codex plugin marketplace for MarkFlow Hub.
 It exposes one plugin, `mark-flow`, that bundles:
 
 - a Codex plugin manifest at `plugins/mark-flow/.codex-plugin/plugin.json`
-- a bundled MCP HTTP server config at `plugins/mark-flow/.mcp.json`
+- a bundled MCP streamable HTTP server config at `plugins/mark-flow/.mcp.json`
 - a MarkFlow usage skill at `plugins/mark-flow/skills/mark-flow/SKILL.md`
 - marketplace metadata at `.agents/plugins/marketplace.json`
 
 ## Requirements
 
 - Codex CLI with plugin support.
-- A MarkFlow MCP HTTP endpoint, defaulting to `https://markflow-api.vuihoc.vn/mcp`.
+- A MarkFlow MCP streamable HTTP endpoint, defaulting to `https://markflow-api.vuihoc.vn/mcp`.
 
 ## Setup
 
@@ -27,11 +27,20 @@ codex plugin marketplace add https://github.com/MinhBienK2/vh-plugin.git
 
 Restart Codex, open `/plugins`, choose `MarkFlow`, install it, and enable it.
 
+## Authentication
+
+The production MarkFlow MCP endpoint requires MarkFlow access. Codex will start
+the OAuth/login flow when the MCP server asks for authentication. If the account
+does not have access, tool calls will fail with an authentication error from the
+MarkFlow MCP server.
+
 ## MCP Server
 
-The plugin connects to the configured MarkFlow MCP HTTP URL. The plugin bundle does not run a backend service; it only configures Codex to call that MCP endpoint.
+The plugin connects to the configured MarkFlow MCP streamable HTTP URL. The
+plugin bundle does not run a backend service; it only configures Codex to call
+that MCP endpoint.
 
-The bundled MCP tools are read-only:
+The bundled MCP config allowlists these read-only tools:
 
 - `search_scripts`
 - `get_script`

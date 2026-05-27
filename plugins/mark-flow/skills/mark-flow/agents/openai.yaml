@@ -8,7 +8,8 @@ dependencies:
     - type: "mcp"
       value: "markflow"
       description: "Read-only MarkFlow Hub MCP server for scripts, daily scripts, catalogs, comments, and timelines."
-      transport: "http"
+      transport: "streamable_http"
+      url: "https://markflow-api.vuihoc.vn/mcp"
 
 policy:
   allow_implicit_invocation: true

@@ -1,7 +1,7 @@
 {
   "name": "vh-plugin",
   "interface": {
-    "displayName": "VH Plugin"
+    "displayName": "VH plugin"
   },
   "plugins": [
     {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Read-only Codex access to MarkFlow Hub scripts, daily scripts, catalogs, comments, and review timelines through MCP.",
   "author": {
-    "name": "MarkFlow Hub"
+    "name": "vuihoc bin"
   },
   "repository": "https://github.com/MinhBienK2/vh-plugin.git",
   "keywords": [
