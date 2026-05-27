@@ -16,7 +16,7 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "MarkFlow",
+    "displayName": "Mark Flow",
     "shortDescription": "Search and inspect MarkFlow content through MCP.",
     "longDescription": "Connects Codex to the MarkFlow Hub read-only MCP server for searching scripts and daily scripts, opening details and comments, listing catalog data, and reading review timelines.",
     "developerName": "Vuihoc",
