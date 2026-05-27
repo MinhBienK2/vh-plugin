@@ -7,8 +7,8 @@
     {
       "name": "mark-flow",
       "source": {
-        "source": "local",
-        "path": "./plugins/mark-flow"
+        "source": "git",
+        "url": "https://github.com/MinhBienK2/vh-plugin.git"
       },
       "policy": {
         "installation": "AVAILABLE",

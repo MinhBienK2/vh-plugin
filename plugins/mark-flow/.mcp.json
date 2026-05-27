@@ -2,7 +2,7 @@
   "mcpServers": {
     "markflow": {
       "type": "http",
-      "url": "https://dev-markflow-api.vuihoc.vn/mcp",
+      "url": "https://markflow-api.vuihoc.vn/mcp",
       "note": "MarkFlow Hub MCP HTTP endpoint."
     }
   }
