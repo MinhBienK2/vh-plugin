@@ -1,14 +1,14 @@
 {
-  "name": "mark-flow",
+  "name": "vh-plugin",
   "interface": {
-    "displayName": "MarkFlow"
+    "displayName": "VH Plugin"
   },
   "plugins": [
     {
       "name": "mark-flow",
       "source": {
-        "source": "git",
-        "url": "https://github.com/MinhBienK2/vh-plugin.git"
+        "source": "local",
+        "path": "./plugins/mark-flow"
       },
       "policy": {
         "installation": "AVAILABLE",
